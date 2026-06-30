@@ -1,0 +1,15 @@
+# Turbine Generator A - Maintenance Manual
+
+## 1. Routine Inspection
+- Check bearing vibration levels daily. Normal levels should not exceed 10mm/s.
+- Inspect hydraulic fluid temperature. Normal operating range is 45°C - 65°C.
+
+## 2. Emergency Shutdown Procedure
+If vibration exceeds 15mm/s or temperature spikes above 85°C:
+1. Initiate emergency cut-off.
+2. Evacuate immediate vicinity.
+3. Contact the chief engineer.
+
+## 3. Maintenance Schedule
+- Oil change every 500 operating hours.
+- Filter replacement every month.
