@@ -1,4 +1,5 @@
 import express from 'express';
+import { eq } from 'drizzle-orm';
 import cors from 'cors';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { router } from './trpc';
@@ -64,6 +65,26 @@ app.post('/upload', upload.single('document'), async (req, res) => {
   } catch (error) {
     console.error('Upload Error:', error);
     res.status(500).json({ error: 'Database insert failed' });
+  }
+});
+
+// File download endpoint
+app.get('/api/download/:id', async (req, res) => {
+  try {
+    const docId = parseInt(req.params.id);
+    if (isNaN(docId)) return res.status(400).send('Invalid ID');
+    
+    const docs = await db.select().from(documents).where(eq(documents.id, docId));
+    const doc = docs[0];
+    
+    if (!doc || !doc.s3Url || !fs.existsSync(doc.s3Url)) {
+      return res.status(404).send('File not found');
+    }
+    
+    res.download(doc.s3Url, doc.filename);
+  } catch (error) {
+    console.error('Download Error:', error);
+    res.status(500).send('Server Error');
   }
 });
 

@@ -40,6 +40,11 @@ export default function DocumentIngestion() {
     }
   };
 
+  const handleDownload = (id: number) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7860';
+    window.open(`${API_URL}/api/download/${id}`, '_blank');
+  };
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="bg-gray-900/40 p-6 rounded-2xl border border-gray-800 backdrop-blur-sm">
@@ -113,7 +118,8 @@ export default function DocumentIngestion() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="border-b border-gray-800/50 hover:bg-gray-800/40 transition-colors"
+                      onClick={() => handleDownload(doc.id)}
+                      className="border-b border-gray-800/50 hover:bg-gray-800/40 transition-colors cursor-pointer"
                     >
                       <td className="py-4 px-6 flex items-center space-x-3">
                         <File className="w-5 h-5 text-accent/70" />
