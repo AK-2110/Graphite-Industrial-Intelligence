@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, Handle, Position } from '@xyflow/react';
+import { ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, Handle, Position, BaseEdge, getBezierPath, EdgeLabelRenderer, useReactFlow } from '@xyflow/react';
 import type { Node, Edge } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, AlertTriangle, FileText, Activity, Server, Zap, Search, X, Loader2 } from 'lucide-react';
+import { Database, AlertTriangle, FileText, Activity, Server, Zap, Search, X, Loader2, Link as LinkIcon } from 'lucide-react';
 import { trpc } from '../trpc';
 import ReactMarkdown from 'react-markdown';
 import '@xyflow/react/dist/style.css';
@@ -49,6 +49,24 @@ const CustomNode = ({ data, selected }: any) => {
 
 const nodeTypes = { custom: CustomNode };
 
+const CustomEdge = ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition, style, markerEnd }: any) => {
+  const { setEdges } = useReactFlow();
+  const [edgePath, labelX, labelY] = getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
+  return (
+    <>
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <EdgeLabelRenderer>
+        <div style={{ position: 'absolute', transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`, pointerEvents: 'all' }} className="nodrag nopan">
+          <button className="w-5 h-5 bg-gray-900 text-gray-400 hover:text-white hover:bg-red-500/80 border border-gray-700 rounded-full flex items-center justify-center text-xs transition-all shadow-lg" onClick={(event) => { event.stopPropagation(); setEdges((es) => es.filter((e) => e.id !== id)); }} title="Remove Connection">
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      </EdgeLabelRenderer>
+    </>
+  );
+};
+const edgeTypes = { custom: CustomEdge };
+
 // 2. Initial Data
 const initialNodes: Node[] = [
   { id: '1', type: 'custom', position: { x: 400, y: 100 }, data: { label: 'Turbine Generator A', type: 'asset', details: 'Main power turbine in Sector 4. Installed 2019.', status: 'Warning' } },
@@ -59,11 +77,11 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', source: '1', target: '2', label: 'HAS_ANOMALY', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
-  { id: 'e1-3', source: '1', target: '3', label: 'REFERENCED_BY', style: { stroke: '#60a5fa', strokeWidth: 2, opacity: 0.6 } },
-  { id: 'e1-4', source: '1', target: '4', label: 'CONTAINS', style: { stroke: '#34d399', strokeWidth: 2, opacity: 0.6 } },
-  { id: 'e2-4', source: '2', target: '4', label: 'LOCATED_AT', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
-  { id: 'e3-5', source: '3', target: '5', label: 'SIMILAR_TO', style: { stroke: '#60a5fa', strokeWidth: 2, strokeDasharray: '5 5' } },
+  { id: 'e1-2', type: 'custom', source: '1', target: '2', label: 'HAS_ANOMALY', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
+  { id: 'e1-3', type: 'custom', source: '1', target: '3', label: 'REFERENCED_BY', style: { stroke: '#60a5fa', strokeWidth: 2, opacity: 0.6 } },
+  { id: 'e1-4', type: 'custom', source: '1', target: '4', label: 'CONTAINS', style: { stroke: '#34d399', strokeWidth: 2, opacity: 0.6 } },
+  { id: 'e2-4', type: 'custom', source: '2', target: '4', label: 'LOCATED_AT', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
+  { id: 'e3-5', type: 'custom', source: '3', target: '5', label: 'SIMILAR_TO', style: { stroke: '#60a5fa', strokeWidth: 2, strokeDasharray: '5 5' } },
 ];
 
 export default function KnowledgeGraph() {
@@ -71,6 +89,7 @@ export default function KnowledgeGraph() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
+  const [connectingNodeId, setConnectingNodeId] = useState<string | null>(null);
 
   const analyzeMutation = trpc.qa.analyzeNode.useMutation({
     onSuccess: (data) => {
@@ -78,9 +97,23 @@ export default function KnowledgeGraph() {
     }
   });
 
-  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge({ ...params, type: 'custom' }, eds)), [setEdges]);
 
   const onNodeClick = (event: React.MouseEvent, node: Node) => {
+    if (connectingNodeId && connectingNodeId !== node.id) {
+      const newEdge: Edge = {
+        id: `e${connectingNodeId}-${node.id}`,
+        type: 'custom',
+        source: connectingNodeId,
+        target: node.id,
+        label: 'USER_LINKED',
+        style: { stroke: '#a855f7', strokeWidth: 2, strokeDasharray: '5 5' }
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+      setConnectingNodeId(null);
+      return;
+    }
+    
     setSelectedNode(node);
     setAnalysisResult(null); // clear previous analysis when clicking a new node
   };
@@ -88,6 +121,7 @@ export default function KnowledgeGraph() {
   const handlePaneClick = () => {
     setSelectedNode(null);
     setAnalysisResult(null);
+    setConnectingNodeId(null);
   };
 
   const runAnalysis = (action: 'root_cause' | 'summarize') => {
@@ -99,6 +133,11 @@ export default function KnowledgeGraph() {
       nodeType: selectedNode.data.type,
       action
     });
+  };
+
+  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setEdges((eds) => eds.filter((e) => e.id !== edge.id));
   };
 
   return (
@@ -119,6 +158,15 @@ export default function KnowledgeGraph() {
       </div>
 
       <div className="flex-1 bg-gray-950/80 rounded-b-2xl border-x border-b border-gray-800 relative overflow-hidden">
+        
+        {connectingNodeId && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-6 py-2 rounded-full shadow-[0_0_20px_rgba(147,51,234,0.5)] z-20 flex items-center font-bold text-sm animate-pulse">
+            <LinkIcon className="w-4 h-4 mr-2" /> Select target node to connect...
+            <button onClick={() => setConnectingNodeId(null)} className="ml-4 hover:text-gray-300">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -126,8 +174,10 @@ export default function KnowledgeGraph() {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
           onPaneClick={handlePaneClick}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           fitView
           className="bg-grid-pattern"
           proOptions={{ hideAttribution: true }}
@@ -209,6 +259,15 @@ export default function KnowledgeGraph() {
                       className="w-full py-2.5 px-4 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center disabled:opacity-50"
                     >
                       <FileText className="w-4 h-4 mr-2" /> Summarize Context
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setConnectingNodeId(selectedNode.id);
+                        setSelectedNode(null);
+                      }}
+                      className="w-full py-2.5 px-4 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 text-purple-400 rounded-lg text-sm font-medium transition-colors flex items-center justify-center mt-2"
+                    >
+                      <LinkIcon className="w-4 h-4 mr-2" /> Link to another node
                     </button>
                   </div>
                 </div>
