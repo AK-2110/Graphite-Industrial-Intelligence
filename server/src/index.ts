@@ -74,7 +74,18 @@ app.use(
   }),
 );
 
-const PORT = process.env.PORT || 4000;
+// Serve frontend static files in production
+const clientDistPath = path.join(process.cwd(), '../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  
+  // Catch-all route for SPA routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
+
+const PORT = process.env.PORT || 7860;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
