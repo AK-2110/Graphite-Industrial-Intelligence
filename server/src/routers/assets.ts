@@ -22,7 +22,7 @@ export const assetsRouter = router({
         type: input.type,
         location: input.location,
         description: input.description,
-        status: input.status,
+        status: input.status as 'operational' | 'maintenance' | 'offline',
       }).returning();
       return newAsset[0];
     }),

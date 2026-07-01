@@ -56,7 +56,7 @@ app.post('/upload', upload.single('document'), async (req, res) => {
 
     const newDoc = await db.insert(documents).values({
       filename: req.file.originalname,
-      format: safeFormat,
+      format: safeFormat as 'pdf' | 'text',
       s3Url: req.file.path,
       status: 'indexed', 
     }).returning();
