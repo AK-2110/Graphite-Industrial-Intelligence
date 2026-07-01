@@ -101,7 +101,7 @@ if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   
   // Catch-all route for SPA routing
-  app.get('*', (req, res) => {
+  app.get(/^(.*)$/, (req, res) => {
     res.sendFile(path.join(clientDistPath, 'index.html'));
   });
 }
