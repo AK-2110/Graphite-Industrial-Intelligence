@@ -1,14 +1,32 @@
-import React from 'react';
-import { AlertTriangle, ShieldAlert, CheckCircle, Activity } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { AlertTriangle, ShieldAlert, CheckCircle, Activity, Loader2, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const MOCK_ALERTS = [
-  { id: 1, asset: 'Turbine Generator A', severity: 'critical', type: 'Vibration Anomaly', time: '10 mins ago', status: 'active', desc: 'Bearing vibration exceeded 15mm/s limit. Immediate inspection required.' },
-  { id: 2, asset: 'Hydraulic Press HP-01', severity: 'high', type: 'Temperature Spike', time: '1 hour ago', status: 'investigating', desc: 'Hydraulic fluid temp reached 85°C. Cooling system check recommended.' },
-  { id: 3, asset: 'Conveyor Belt System 2', severity: 'medium', type: 'Motor Load', time: '3 hours ago', status: 'resolved', desc: 'Transient load spike detected. Normal operation resumed.' }
+const INITIAL_ALERTS = [
+  { id: 1, asset: 'Turbine Generator A', severity: 'critical', type: 'Vibration Anomaly', time: '10 mins ago', status: 'active', desc: 'Bearing vibration exceeded 15mm/s limit. Immediate inspection required.', plan: null as string | null },
+  { id: 2, asset: 'Hydraulic Press HP-01', severity: 'high', type: 'Temperature Spike', time: '1 hour ago', status: 'investigating', desc: 'Hydraulic fluid temp reached 85°C. Cooling system check recommended.', plan: null as string | null },
+  { id: 3, asset: 'Conveyor Belt System 2', severity: 'medium', type: 'Motor Load', time: '3 hours ago', status: 'resolved', desc: 'Transient load spike detected. Normal operation resumed.', plan: null as string | null }
 ];
 
 export default function AnomalyFeed() {
+  const [alerts, setAlerts] = useState(INITIAL_ALERTS);
+  const [generatingId, setGeneratingId] = useState<number | null>(null);
+
+  const handleAcknowledge = (id: number) => {
+    setAlerts(alerts.map(a => a.id === id ? { ...a, status: 'investigating' } : a));
+  };
+
+  const handleGenerate = (id: number) => {
+    setGeneratingId(id);
+    setTimeout(() => {
+      setAlerts(alerts.map(a => a.id === id ? {
+        ...a,
+        plan: "### Immediate Remediation Required\n1. Safely power down asset using emergency procedure SOP-12.\n2. Dispatch maintenance crew to inspect primary bearings.\n3. Replace bearing assembly if thermal damage exceeds 2mm.\n\n*Source: OEM Manual Pg. 142*"
+      } : a));
+      setGeneratingId(null);
+    }, 1500);
+  };
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="flex justify-between items-center bg-gray-900/40 p-6 rounded-2xl border border-gray-800 backdrop-blur-sm">
@@ -24,13 +42,13 @@ export default function AnomalyFeed() {
       </div>
 
       <div className="grid gap-6">
-        {MOCK_ALERTS.map((alert, i) => (
+        {alerts.map((alert, i) => (
           <motion.div 
             key={alert.id}
             initial={{ opacity: 0, x: -20, rotateX: 10 }}
             animate={{ opacity: 1, x: 0, rotateX: 0 }}
             transition={{ delay: i * 0.15, type: "spring", stiffness: 100 }}
-            className={`p-6 rounded-xl border shadow-lg backdrop-blur-md transition-all hover:scale-[1.01] ${
+            className={`p-6 rounded-xl border shadow-lg backdrop-blur-md transition-all ${
               alert.severity === 'critical' ? 'bg-gray-900/80 border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.15)]' :
               alert.severity === 'high' ? 'bg-gray-900/60 border-orange-500/30' :
               'bg-gray-900/40 border-gray-800'
@@ -68,13 +86,42 @@ export default function AnomalyFeed() {
               </div>
             </div>
             
-            {alert.status !== 'resolved' && (
+            <AnimatePresence>
+              {alert.plan && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-6 p-4 bg-gray-800/50 border border-gray-700/50 rounded-xl overflow-hidden"
+                >
+                  <div className="flex items-center text-accent mb-2">
+                    <FileText className="w-4 h-4 mr-2" />
+                    <span className="font-mono text-sm font-bold">AI Remediation Plan Generated</span>
+                  </div>
+                  <div className="text-gray-300 text-sm font-mono whitespace-pre-line leading-relaxed pl-6 border-l-2 border-accent/30">
+                    {alert.plan}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {alert.status !== 'resolved' && !alert.plan && (
               <div className="mt-6 pt-5 border-t border-gray-800 flex justify-end space-x-4">
-                <button className="px-5 py-2.5 text-sm font-bold text-gray-300 bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg transition-all border border-gray-700">
-                  Acknowledge
-                </button>
-                <button className="px-5 py-2.5 text-sm font-bold text-gray-900 bg-accent hover:bg-white rounded-lg transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(255,255,255,0.6)]">
-                  Generate Remediation Plan
+                {alert.status === 'active' && (
+                  <button 
+                    onClick={() => handleAcknowledge(alert.id)}
+                    className="px-5 py-2.5 text-sm font-bold text-gray-300 bg-gray-800 hover:bg-gray-700 hover:text-white rounded-lg transition-all border border-gray-700">
+                    Acknowledge
+                  </button>
+                )}
+                <button 
+                  onClick={() => handleGenerate(alert.id)}
+                  disabled={generatingId === alert.id}
+                  className="flex items-center px-5 py-2.5 text-sm font-bold text-gray-900 bg-accent hover:bg-white rounded-lg transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] disabled:opacity-50 disabled:shadow-none">
+                  {generatingId === alert.id ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Analyzing OEMs...</>
+                  ) : (
+                    'Generate Remediation Plan'
+                  )}
                 </button>
               </div>
             )}
