@@ -1,12 +1,3 @@
----
-title: Graphite Industrial Intelligence
-emoji: 🏭
-colorFrom: purple
-colorTo: indigo
-sdk: docker
-pinned: false
----
-
 # Graphite Industrial Intelligence
 
 Graphite Industrial Intelligence is a state-of-the-art predictive maintenance and root-cause analysis platform designed for critical industrial infrastructure. It bridges the gap between raw hardware telemetry and unstructured technical documentation. 

@@ -19,7 +19,7 @@ export default function DocumentIngestion() {
     formData.append('document', file);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7860';
+      const API_URL = import.meta.env.PROD ? '' : 'http://localhost:7860';
       const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData,
@@ -41,7 +41,7 @@ export default function DocumentIngestion() {
   };
 
   const handleDownload = (id: number) => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:7860';
+    const API_URL = import.meta.env.PROD ? '' : 'http://localhost:7860';
     window.open(`${API_URL}/api/download/${id}`, '_blank');
   };
 
