@@ -1,5 +1,11 @@
 # Stage 1: Build the frontend
 FROM node:18-alpine AS frontend-builder
+WORKDIR /app
+
+# Copy the server directory first so tRPC types can be resolved by the frontend
+COPY server/ ./server/
+
+# Now build the client
 WORKDIR /app/client
 COPY client/package*.json ./
 RUN npm install
