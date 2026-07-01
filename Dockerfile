@@ -2,8 +2,11 @@
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app
 
-# Copy the server directory first so tRPC types can be resolved by the frontend
-COPY server/ ./server/
+# Install server dependencies so tRPC types can be resolved by the frontend
+WORKDIR /app/server
+COPY server/package*.json ./
+RUN npm install
+COPY server/ ./
 
 # Now build the client
 WORKDIR /app/client
