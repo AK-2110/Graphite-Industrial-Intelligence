@@ -1,5 +1,5 @@
 # Stage 1: Build the frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 WORKDIR /app
 
 # Install server dependencies so tRPC types can be resolved by the frontend
@@ -18,7 +18,7 @@ ENV VITE_API_URL=""
 RUN npm run build
 
 # Stage 2: Build the backend and serve
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # Copy frontend build
