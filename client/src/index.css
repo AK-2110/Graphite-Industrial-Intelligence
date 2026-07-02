@@ -21,10 +21,10 @@
     @apply bg-panel backdrop-blur-xl border border-gray-800 shadow-2xl;
   }
   .glass-card {
-    @apply bg-gray-900/50 backdrop-blur-md border border-gray-800 shadow-lg hover:border-gray-700 hover:shadow-cyan-500/10 transition-all duration-300;
+    @apply bg-panel backdrop-blur-md border border-gray-800 shadow-lg hover:border-gray-700 hover:shadow-accent/10 transition-all duration-300;
   }
   .neon-text {
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3);
+    text-shadow: 0 0 10px rgba(0, 200, 83, 0.5), 0 0 20px rgba(0, 200, 83, 0.3);
   }
   .animation-delay-2000 {
     animation-delay: 2s;

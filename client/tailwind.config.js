@@ -12,14 +12,15 @@ export default {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       colors: {
-        background: '#0B0F19', // Deep dark blue/black
-        foreground: '#E2E8F0', // Light gray for text
-        panel: 'rgba(17, 24, 39, 0.7)', // Glassmorphism panel bg
-        accent: '#06b6d4', // Cyan 500 for primary glowing accents
-        accentHover: '#0891b2', // Cyan 600
+        background: '#1A1A1D',
+        foreground: '#E0E0E0',
+        muted: '#A0A0A0',
+        panel: '#2C2C30',
+        accent: '#00C853',
+        accentHover: '#00a344',
         success: '#10B981',
-        warning: '#F59E0B',
-        danger: '#EF4444',
+        warning: '#FFC107',
+        danger: '#D32F2F',
         info: '#3B82F6',
         gray: {
           800: 'rgba(31, 41, 55, 0.6)',

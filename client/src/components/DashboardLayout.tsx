@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   className={clsx(
                     "flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all duration-300 cursor-pointer",
                     isActive 
-                      ? "bg-accent/20 text-accent border border-accent/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]" 
+                      ? "bg-accent/20 text-accent border border-accent/50 shadow-[0_0_15px_rgba(0,200,83,0.3)]" 
                       : "text-gray-400 hover:bg-gray-800/50 hover:text-white border border-transparent"
                   )}
                 >
@@ -58,8 +58,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </nav>
         <div className="p-4 border-t border-gray-800">
-           <div className="flex items-center space-x-3 px-4 py-3 bg-gray-900/50 rounded-lg border border-gray-800">
-             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-accent/20">
+           <div className="flex items-center space-x-3 px-4 py-3 bg-panel rounded-lg border border-gray-800">
+             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-emerald-600 flex items-center justify-center text-white font-bold shadow-lg shadow-accent/20">
                U
              </div>
              <div className="flex flex-col">
@@ -73,8 +73,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Animated Background Effects */}
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none animate-blob"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none animate-blob" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none animate-blob"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-warning/10 rounded-full blur-[120px] mix-blend-screen pointer-events-none animate-blob" style={{ animationDelay: '2s' }}></div>
 
         <header className="h-16 glass-panel border-b border-gray-800 flex items-center px-6 justify-between z-10 sticky top-0">
           <button className="text-gray-400 hover:text-white transition-colors">

@@ -20,13 +20,13 @@ const CustomNode = ({ data, selected }: any) => {
   let Icon = Database;
 
   if (isAsset) {
-    colorClasses = "bg-green-900/40 border-green-500/50 text-green-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]";
+    colorClasses = "bg-accent/20 border-accent/50 text-accent shadow-[0_0_15px_rgba(0,200,83,0.2)]";
     Icon = Server;
   } else if (isAnomaly) {
-    colorClasses = "bg-red-900/40 border-red-500/50 text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.3)]";
+    colorClasses = "bg-danger/20 border-danger/50 text-danger shadow-[0_0_20px_rgba(211,47,47,0.3)]";
     Icon = AlertTriangle;
   } else if (isDoc) {
-    colorClasses = "bg-blue-900/40 border-blue-500/50 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]";
+    colorClasses = "bg-warning/20 border-warning/50 text-warning shadow-[0_0_15px_rgba(255,193,7,0.2)]";
     Icon = FileText;
   }
 
@@ -34,7 +34,7 @@ const CustomNode = ({ data, selected }: any) => {
     <div className={`${baseClasses} ${colorClasses} ${selectedClasses} backdrop-blur-md`}>
       <Handle type="target" position={Position.Top} className="!bg-gray-500 !w-3 !h-3" />
       <div className="flex items-center space-x-3">
-        <div className={`p-2 rounded-lg ${isAsset ? 'bg-green-500/20' : isAnomaly ? 'bg-red-500/20' : 'bg-blue-500/20'}`}>
+        <div className={`p-2 rounded-lg ${isAsset ? 'bg-accent/20' : isAnomaly ? 'bg-danger/20' : 'bg-warning/20'}`}>
           <Icon className="w-5 h-5" />
         </div>
         <div>
@@ -77,11 +77,11 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', type: 'custom', source: '1', target: '2', label: 'HAS_ANOMALY', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
-  { id: 'e1-3', type: 'custom', source: '1', target: '3', label: 'REFERENCED_BY', style: { stroke: '#60a5fa', strokeWidth: 2, opacity: 0.6 } },
-  { id: 'e1-4', type: 'custom', source: '1', target: '4', label: 'CONTAINS', style: { stroke: '#34d399', strokeWidth: 2, opacity: 0.6 } },
-  { id: 'e2-4', type: 'custom', source: '2', target: '4', label: 'LOCATED_AT', animated: true, style: { stroke: '#ef4444', strokeWidth: 2 } },
-  { id: 'e3-5', type: 'custom', source: '3', target: '5', label: 'SIMILAR_TO', style: { stroke: '#60a5fa', strokeWidth: 2, strokeDasharray: '5 5' } },
+  { id: 'e1-2', type: 'custom', source: '1', target: '2', label: 'HAS_ANOMALY', animated: true, style: { stroke: '#D32F2F', strokeWidth: 2 } },
+  { id: 'e1-3', type: 'custom', source: '1', target: '3', label: 'REFERENCED_BY', style: { stroke: '#FFC107', strokeWidth: 2, opacity: 0.6 } },
+  { id: 'e1-4', type: 'custom', source: '1', target: '4', label: 'CONTAINS', style: { stroke: '#00C853', strokeWidth: 2, opacity: 0.6 } },
+  { id: 'e2-4', type: 'custom', source: '2', target: '4', label: 'LOCATED_AT', animated: true, style: { stroke: '#D32F2F', strokeWidth: 2 } },
+  { id: 'e3-5', type: 'custom', source: '3', target: '5', label: 'SIMILAR_TO', style: { stroke: '#FFC107', strokeWidth: 2, strokeDasharray: '5 5' } },
 ];
 
 export default function KnowledgeGraph() {
@@ -182,7 +182,7 @@ export default function KnowledgeGraph() {
           className="bg-grid-pattern"
           proOptions={{ hideAttribution: true }}
         >
-          <Background color="#1f2937" gap={20} size={1.5} />
+          <Background color="#1A1A1D" gap={20} size={1.5} />
           <Controls className="bg-gray-900 border-gray-800 fill-white" />
         </ReactFlow>
 
